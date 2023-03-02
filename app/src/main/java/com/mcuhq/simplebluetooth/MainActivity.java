@@ -152,7 +152,8 @@ public class MainActivity extends AppCompatActivity {
             mSendBtn.setOnClickListener(new View.OnClickListener(){  // 글씨 보내기 버튼 이벤트 부여
                 @Override
                 public void onClick(View v){
-                    onClickButtonSend(v); // 글자보내기 메서드
+                    //onClickButtonSend(v); // 글자보내기 메서드
+                    btConnectedPage(v);
                 }
             });
         }
@@ -318,5 +319,11 @@ public class MainActivity extends AppCompatActivity {
             Log.e(TAG, "Could not create Insecure RFComm Connection",e);
         }
         return  device.createRfcommSocketToServiceRecord(BT_MODULE_UUID);
+    }
+
+    private  void btConnectedPage(View view){
+        Intent intent = new Intent(getApplicationContext(), SubActivity.class);
+        intent.putExtra("BtConnected", (CharSequence) mConnectedThread);
+        startActivity(intent);
     }
 }
