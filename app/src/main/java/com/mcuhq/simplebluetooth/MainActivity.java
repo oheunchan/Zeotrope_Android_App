@@ -385,7 +385,7 @@ public class MainActivity extends AppCompatActivity {
         if(mConnectedThread!=null){
 
             byte[] buff = new byte[1024];
-            int array[] = {0xFF,0xA2,0x5D};
+            int array[] = {0xFF,0xA2,0x5D,0xFF};
 
             for(int i=0; i< array.length; i++) {
                 mConnectedThread.write1(array[i]);
@@ -397,7 +397,7 @@ public class MainActivity extends AppCompatActivity {
         if(mConnectedThread!=null){
 
             byte[] buff = new byte[1024];
-            int array[] = {0xFF,0x62,0x9D};
+            int array[] = {0xFF,0x62,0x9D,0xFF};
 
             for(int i=0; i< array.length; i++) {
                 mConnectedThread.write1(array[i]);
@@ -409,7 +409,7 @@ public class MainActivity extends AppCompatActivity {
         if(mConnectedThread!=null){
 
             byte[] buff = new byte[1024];
-            int array[] = {0xFF,0xE2,0x1D};
+            int array[] = {0xFF,0xE2,0x1D,0xFF};
 
             for(int i=0; i< array.length; i++) {
                 mConnectedThread.write1(array[i]);
@@ -421,7 +421,7 @@ public class MainActivity extends AppCompatActivity {
         if(mConnectedThread!=null){
 
             byte[] buff = new byte[1024];
-            int array[] = {0xFF,0x22,0xDD};
+            int array[] = {0xFF,0x22,0xDD,0xFF};
 
             for(int i=0; i< array.length; i++) {
                 mConnectedThread.write1(array[i]);
@@ -433,7 +433,7 @@ public class MainActivity extends AppCompatActivity {
         if(mConnectedThread!=null){
 
             byte[] buff = new byte[1024];
-            int array[] = {0xFF,0x02,0xFD};
+            int array[] = {0xFF,0x02,0xFD,0xFF};
 
             for(int i=0; i< array.length; i++) {
                 mConnectedThread.write1(array[i]);
@@ -445,7 +445,7 @@ public class MainActivity extends AppCompatActivity {
         if(mConnectedThread!=null){
 
             byte[] buff = new byte[1024];
-            int array[] = {0xFF,0xC2,0x3D};
+            int array[] = {0xFF,0xC2,0x3D,0xFF};
 
             for(int i=0; i< array.length; i++) {
                 mConnectedThread.write1(array[i]);
@@ -457,7 +457,7 @@ public class MainActivity extends AppCompatActivity {
         if(mConnectedThread!=null){
 
             byte[] buff = new byte[1024];
-            int array[] = {0xFF,0xE0,0x1F};
+            int array[] = {0xFF,0xE0,0x1F,0xFF};
 
             for(int i=0; i< array.length; i++) {
                 mConnectedThread.write1(array[i]);
@@ -470,7 +470,7 @@ public class MainActivity extends AppCompatActivity {
         if(mConnectedThread!=null){
 
             byte[] buff = new byte[1024];
-            int array[] = {0xFF,0x90,0x6F};
+            int array[] = {0xFF,0x90,0x6F,0xFF};
 
             for(int i=0; i< array.length; i++) {
                 mConnectedThread.write1(array[i]);
