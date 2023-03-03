@@ -52,11 +52,18 @@ public class MainActivity extends AppCompatActivity {
     private Button mOffBtn; // 블루투스 off 버튼
     private Button mListPairedDevicesBtn; // 페어링된 디바이스 불러오기 버튼
     private Button mDiscoverBtn; // 연결가능한 디바이스 목록찾기 버튼
-
-    private Button mSendBtn; // 데이터 보내기 버튼
     private ListView mDevicesListView; // 블투 연결 할 디바이스 목록 찾기 뷰리스트
 
+    //임시용
+    private Button mLedOnBtn;
+    private Button mLedOffBtn;
+    private Button mForwardBtn;
+    private Button mReverseBtn;
+    private Button mSpeedUpBtn;
+    private Button mSpeedDownBtn;
+    private Button mStopBtn;
 
+    private Button mEtcBtn;
 
 
     private BluetoothAdapter mBTAdapter; // 블루투스 관련 설정 객체
@@ -79,8 +86,18 @@ public class MainActivity extends AppCompatActivity {
         mScanBtn = (Button)findViewById(R.id.scan);
         mOffBtn = (Button)findViewById(R.id.off);
         mDiscoverBtn = (Button)findViewById(R.id.discover);
-        mSendBtn = (Button)findViewById(R.id.send);
         mListPairedDevicesBtn = (Button)findViewById(R.id.paired_btn);
+
+        // 임시버튼
+        mLedOnBtn = (Button)findViewById(R.id.btn_ledOn);
+        mLedOffBtn = (Button)findViewById(R.id.btn_ledOff);
+        mForwardBtn = (Button)findViewById(R.id.btn_forward);
+        mReverseBtn = (Button)findViewById(R.id.btn_reverse);
+        mSpeedUpBtn = (Button)findViewById(R.id.btn_SpeedUp);
+        mSpeedDownBtn = (Button)findViewById(R.id.btn_SpeedDown);
+        mStopBtn = (Button)findViewById(R.id.btn_Stop);
+        mEtcBtn = (Button)findViewById(R.id.btn_Etc);
+
 
         mBTArrayAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1); // 리스트로 보여줄 어댑터 (텍스트뷰 하나로 구성된 레이아웃)
         mBTAdapter = BluetoothAdapter.getDefaultAdapter(); // 블루투스 연결이 가능한지 여부 파악 (연결이 안 됐으면 null 값 반환)
@@ -149,13 +166,63 @@ public class MainActivity extends AppCompatActivity {
                     discover();
                 } // 연결가능한 디바이스 찾기 메서드
             });
-            mSendBtn.setOnClickListener(new View.OnClickListener(){  // 글씨 보내기 버튼 이벤트 부여
+
+            //임시
+            mLedOnBtn.setOnClickListener(new View.OnClickListener(){  // 블루투스 연결가능한 디바이스 찾기 버튼 이벤트 부여
                 @Override
                 public void onClick(View v){
-                    //onClickButtonSend(v); // 글자보내기 메서드
-                    btConnectedPage(v);
-                }
+                    onClickButtonLedOn();
+                } // 연결가능한 디바이스 찾기 메서드
             });
+
+            mLedOffBtn.setOnClickListener(new View.OnClickListener(){  // 블루투스 연결가능한 디바이스 찾기 버튼 이벤트 부여
+                @Override
+                public void onClick(View v){
+                    onClickButtonLedOff();
+                } // 연결가능한 디바이스 찾기 메서드
+            });
+
+            mForwardBtn.setOnClickListener(new View.OnClickListener(){  // 블루투스 연결가능한 디바이스 찾기 버튼 이벤트 부여
+                @Override
+                public void onClick(View v){
+                    onClickButtonForward();
+                } // 연결가능한 디바이스 찾기 메서드
+            });
+
+            mReverseBtn.setOnClickListener(new View.OnClickListener(){  // 블루투스 연결가능한 디바이스 찾기 버튼 이벤트 부여
+                @Override
+                public void onClick(View v){
+                   onClickButtonReverse();
+                } // 연결가능한 디바이스 찾기 메서드
+            });
+
+            mSpeedUpBtn.setOnClickListener(new View.OnClickListener(){  // 블루투스 연결가능한 디바이스 찾기 버튼 이벤트 부여
+                @Override
+                public void onClick(View v){
+                    onClickButtonSpeedUp();
+                } // 연결가능한 디바이스 찾기 메서드
+            });
+
+            mSpeedDownBtn.setOnClickListener(new View.OnClickListener(){  // 블루투스 연결가능한 디바이스 찾기 버튼 이벤트 부여
+                @Override
+                public void onClick(View v){
+                    onClickButtonSpeedDown();
+                } // 연결가능한 디바이스 찾기 메서드
+            });
+            mStopBtn.setOnClickListener(new View.OnClickListener(){  // 블루투스 연결가능한 디바이스 찾기 버튼 이벤트 부여
+                @Override
+                public void onClick(View v){
+                    onClickButtonStop();
+                } // 연결가능한 디바이스 찾기 메서드
+            });
+
+            mEtcBtn.setOnClickListener(new View.OnClickListener(){  // 블루투스 연결가능한 디바이스 찾기 버튼 이벤트 부여
+                @Override
+                public void onClick(View v){
+                    onClickButtonEtc();
+                } // 연결가능한 디바이스 찾기 메서드
+            });
+
         }
     }
 
@@ -296,20 +363,7 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
-    public void onClickButtonSend(View view){
-        if(mConnectedThread!=null){
 
-            byte[] buff = new byte[1024];
-
-
-            int test[] = {0xff,0xA2,0x5D,0xff};
-
-            for(int i=0; i<=3; i++) {
-                mConnectedThread.write1(test[i]);
-            }
-
-             }
-    }
 
     private BluetoothSocket createBluetoothSocket(BluetoothDevice device) throws IOException {
         try {
@@ -326,4 +380,102 @@ public class MainActivity extends AppCompatActivity {
         intent.putExtra("BtConnected", (CharSequence) mConnectedThread);
         startActivity(intent);
     }
+    // 임시 버튼
+    public void onClickButtonLedOn(){
+        if(mConnectedThread!=null){
+
+            byte[] buff = new byte[1024];
+            int array[] = {0xFF,0xA2,0x5D};
+
+            for(int i=0; i< array.length; i++) {
+                mConnectedThread.write1(array[i]);
+            }
+        }
+    }
+
+    public void onClickButtonLedOff(){
+        if(mConnectedThread!=null){
+
+            byte[] buff = new byte[1024];
+            int array[] = {0xFF,0x62,0x9D};
+
+            for(int i=0; i< array.length; i++) {
+                mConnectedThread.write1(array[i]);
+            }
+        }
+    }
+
+    public void onClickButtonForward(){
+        if(mConnectedThread!=null){
+
+            byte[] buff = new byte[1024];
+            int array[] = {0xFF,0xE2,0x1D};
+
+            for(int i=0; i< array.length; i++) {
+                mConnectedThread.write1(array[i]);
+            }
+        }
+    }
+
+    public void onClickButtonReverse(){
+        if(mConnectedThread!=null){
+
+            byte[] buff = new byte[1024];
+            int array[] = {0xFF,0x22,0xDD};
+
+            for(int i=0; i< array.length; i++) {
+                mConnectedThread.write1(array[i]);
+            }
+        }
+    }
+
+    public void onClickButtonSpeedUp(){
+        if(mConnectedThread!=null){
+
+            byte[] buff = new byte[1024];
+            int array[] = {0xFF,0x02,0xFD};
+
+            for(int i=0; i< array.length; i++) {
+                mConnectedThread.write1(array[i]);
+            }
+        }
+    }
+
+    public void onClickButtonSpeedDown(){
+        if(mConnectedThread!=null){
+
+            byte[] buff = new byte[1024];
+            int array[] = {0xFF,0xC2,0x3D};
+
+            for(int i=0; i< array.length; i++) {
+                mConnectedThread.write1(array[i]);
+            }
+        }
+    }
+
+    public void onClickButtonStop(){
+        if(mConnectedThread!=null){
+
+            byte[] buff = new byte[1024];
+            int array[] = {0xFF,0xE0,0x1F};
+
+            for(int i=0; i< array.length; i++) {
+                mConnectedThread.write1(array[i]);
+            }
+        }
+    }
+
+
+    public void onClickButtonEtc(){
+        if(mConnectedThread!=null){
+
+            byte[] buff = new byte[1024];
+            int array[] = {0xFF,0x90,0x6F};
+
+            for(int i=0; i< array.length; i++) {
+                mConnectedThread.write1(array[i]);
+            }
+        }
+    }
+
 }
