@@ -47,7 +47,7 @@ public class SubActivity extends AppCompatActivity {
     }
 
     public void onClickButtonSend(View view){
-        mConnectedThread= (ConnectedThread) secondIntent.getCharSequenceExtra("BtConnected");
+        mConnectedThread= (ConnectedThread) secondIntent.getSerializableExtra("BtConnected");
         if(mConnectedThread!=null){
 
             byte[] buff = new byte[1024];

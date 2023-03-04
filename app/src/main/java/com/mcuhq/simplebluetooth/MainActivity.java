@@ -323,7 +323,7 @@ public class MainActivity extends AppCompatActivity {
 
     private  void btConnectedPage(View view){
         Intent intent = new Intent(getApplicationContext(), SubActivity.class);
-        intent.putExtra("BtConnected", (CharSequence) mConnectedThread);
+        intent.putExtra("BtConnected", mConnectedThread);
         startActivity(intent);
     }
 }

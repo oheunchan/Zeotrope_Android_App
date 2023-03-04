@@ -7,8 +7,9 @@ import android.os.SystemClock;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.Serializable;
 
-public class ConnectedThread extends Thread {
+public class ConnectedThread extends Thread implements Serializable {
     private final BluetoothSocket mmSocket;
     private final InputStream mmInStream;
     private final OutputStream mmOutStream;
