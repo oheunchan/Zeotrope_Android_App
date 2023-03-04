@@ -90,11 +90,77 @@
         android:layout_height="wrap_content"
         android:text="Discover New Devices" />
 
-    <Button
-        android:id="@+id/send"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Send" />
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/btn_ledOn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.25"
+            android:text="LED_ON"
+            android:textSize="12sp" />
+
+        <Button
+            android:id="@+id/btn_ledOff"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.25"
+            android:text="LED_OFF"
+            android:textSize="14sp" />
+
+        <Button
+            android:id="@+id/btn_forward"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.25"
+            android:text="정회전"
+            android:textSize="14sp" />
+
+        <Button
+            android:id="@+id/btn_reverse"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="역회전"
+            android:textSize="14sp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="55dp"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/btn_SpeedUp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.25"
+            android:text="속도_업"
+            android:textSize="14sp" />
+
+        <Button
+            android:id="@+id/btn_SpeedDown"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.25"
+            android:text="속도_다운"
+            android:textSize="14sp" />
+
+        <Button
+            android:id="@+id/btn_Stop"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.25"
+            android:text="STOP" />
+
+        <Button
+            android:id="@+id/btn_Etc"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="ETC" />
+    </LinearLayout>
 
     <ListView
         android:id="@+id/devices_list_view"
