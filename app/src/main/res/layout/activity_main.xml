@@ -15,7 +15,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:text="블투연결" />
+        android:text="BT Zeotrope Controller" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -70,24 +70,28 @@
         android:id="@+id/scan"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="#e6aabb"
         android:text="Bluetooth ON" />
 
     <Button
         android:id="@+id/off"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="#aabbcc"
         android:text="Bluetooth OFF" />
 
     <Button
         android:id="@+id/paired_btn"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="#D2E5F4"
         android:text="Show paired Devices" />
 
     <Button
         android:id="@+id/discover"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="#E2ECD7"
         android:text="Discover New Devices" />
 
     <LinearLayout
@@ -167,6 +171,7 @@
     <ListView
         android:id="@+id/devices_list_view"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="236dp"
         android:choiceMode="singleChoice" />
+
 </LinearLayout>
