@@ -21,15 +21,12 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.CheckBox;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Method;
-import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.Set;
 import java.util.UUID;
@@ -57,13 +54,14 @@ public class MainActivity extends AppCompatActivity {
     //임시용
     private Button mLedOnBtn;
     private Button mLedOffBtn;
-    private Button mForwardBtn;
-    private Button mReverseBtn;
-    private Button mSpeedUpBtn;
-    private Button mSpeedDownBtn;
-    private Button mStopBtn;
-
+    private Button mMoterForwardBtn;
+    private Button mMoterBackwardBtn;
+    private Button mMoterOnBtn;
+    private Button mMoterOffBtn;
+    private Button mMoterNormalBtn;
+    private Button mMoterTableModeBtn;
     private Button mEtcBtn;
+    private Button mResetBtn;
 
 
     private BluetoothAdapter mBTAdapter; // 블루투스 관련 설정 객체
@@ -82,21 +80,23 @@ public class MainActivity extends AppCompatActivity {
 
         // View 단의 속성을 부여
         mBluetoothStatus = (TextView)findViewById(R.id.bluetooth_status);
-        mReadBuffer = (TextView) findViewById(R.id.read_buffer);
-        mScanBtn = (Button)findViewById(R.id.scan);
-        mOffBtn = (Button)findViewById(R.id.off);
+        //mReadBuffer = (TextView) findViewById(R.id.read_buffer);
+        //mScanBtn = (Button)findViewById(R.id.scan);
+        //mOffBtn = (Button)findViewById(R.id.off);
         mDiscoverBtn = (Button)findViewById(R.id.discover);
         mListPairedDevicesBtn = (Button)findViewById(R.id.paired_btn);
 
         // 임시버튼
         mLedOnBtn = (Button)findViewById(R.id.btn_ledOn);
         mLedOffBtn = (Button)findViewById(R.id.btn_ledOff);
-        mForwardBtn = (Button)findViewById(R.id.btn_forward);
-        mReverseBtn = (Button)findViewById(R.id.btn_reverse);
-        mSpeedUpBtn = (Button)findViewById(R.id.btn_SpeedUp);
-        mSpeedDownBtn = (Button)findViewById(R.id.btn_SpeedDown);
-        mStopBtn = (Button)findViewById(R.id.btn_Stop);
-        mEtcBtn = (Button)findViewById(R.id.btn_Etc);
+        mMoterForwardBtn = (Button)findViewById(R.id.btn_moter_forward);
+        mMoterBackwardBtn = (Button)findViewById(R.id.btn_moter_backword);
+        mMoterOnBtn = (Button)findViewById(R.id.btn_moterOn);
+        mMoterOffBtn = (Button)findViewById(R.id.btn_moterOff);
+        mMoterNormalBtn = (Button)findViewById(R.id.btn_moterNormal);
+        mMoterTableModeBtn = (Button)findViewById(R.id.btn_moterTableMode);
+        mEtcBtn = (Button)findViewById(R.id.btn_etc);
+        mResetBtn = (Button)findViewById(R.id.btn_reset);
 
 
         mBTArrayAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1); // 리스트로 보여줄 어댑터 (텍스트뷰 하나로 구성된 레이아웃)
@@ -139,7 +139,7 @@ public class MainActivity extends AppCompatActivity {
         }
         else {
 
-            mScanBtn.setOnClickListener(new View.OnClickListener() { // 블루투스 on 버튼 이벤트 부여
+            /*mScanBtn.setOnClickListener(new View.OnClickListener() { // 블루투스 on 버튼 이벤트 부여
                 @Override
                 public void onClick(View v) {
                     bluetoothOn();
@@ -151,7 +151,7 @@ public class MainActivity extends AppCompatActivity {
                 public void onClick(View v){
                     bluetoothOff();
                 } //블루투스 off 메서드
-            });
+            });*/
 
             mListPairedDevicesBtn.setOnClickListener(new View.OnClickListener() { //블루투스 페어링된 디바이스 리스트 버튼 이벤트 부여
                 @Override
@@ -182,37 +182,44 @@ public class MainActivity extends AppCompatActivity {
                 } // 연결가능한 디바이스 찾기 메서드
             });
 
-            mForwardBtn.setOnClickListener(new View.OnClickListener(){  // 블루투스 연결가능한 디바이스 찾기 버튼 이벤트 부여
+            mMoterForwardBtn.setOnClickListener(new View.OnClickListener(){  // 블루투스 연결가능한 디바이스 찾기 버튼 이벤트 부여
                 @Override
                 public void onClick(View v){
-                    onClickButtonForward();
+                    onClickButtonMoterForward();
                 } // 연결가능한 디바이스 찾기 메서드
             });
 
-            mReverseBtn.setOnClickListener(new View.OnClickListener(){  // 블루투스 연결가능한 디바이스 찾기 버튼 이벤트 부여
+            mMoterBackwardBtn.setOnClickListener(new View.OnClickListener(){  // 블루투스 연결가능한 디바이스 찾기 버튼 이벤트 부여
                 @Override
                 public void onClick(View v){
-                   onClickButtonReverse();
+                    onClickButtonMoterBackward();
                 } // 연결가능한 디바이스 찾기 메서드
             });
 
-            mSpeedUpBtn.setOnClickListener(new View.OnClickListener(){  // 블루투스 연결가능한 디바이스 찾기 버튼 이벤트 부여
+            mMoterOnBtn.setOnClickListener(new View.OnClickListener(){  // 블루투스 연결가능한 디바이스 찾기 버튼 이벤트 부여
                 @Override
                 public void onClick(View v){
-                    onClickButtonSpeedUp();
+                    onClickButtonMoterOn();
                 } // 연결가능한 디바이스 찾기 메서드
             });
 
-            mSpeedDownBtn.setOnClickListener(new View.OnClickListener(){  // 블루투스 연결가능한 디바이스 찾기 버튼 이벤트 부여
+            mMoterOffBtn.setOnClickListener(new View.OnClickListener(){  // 블루투스 연결가능한 디바이스 찾기 버튼 이벤트 부여
                 @Override
                 public void onClick(View v){
-                    onClickButtonSpeedDown();
+                    onClickButtonMoterOff();
                 } // 연결가능한 디바이스 찾기 메서드
             });
-            mStopBtn.setOnClickListener(new View.OnClickListener(){  // 블루투스 연결가능한 디바이스 찾기 버튼 이벤트 부여
+            mMoterNormalBtn.setOnClickListener(new View.OnClickListener(){  // 블루투스 연결가능한 디바이스 찾기 버튼 이벤트 부여
                 @Override
                 public void onClick(View v){
-                    onClickButtonStop();
+                    onClickButtonMoterNormal();
+                } // 연결가능한 디바이스 찾기 메서드
+            });
+
+            mMoterTableModeBtn.setOnClickListener(new View.OnClickListener(){  // 블루투스 연결가능한 디바이스 찾기 버튼 이벤트 부여
+                @Override
+                public void onClick(View v){
+                    onClickButtonMoterTableMode();
                 } // 연결가능한 디바이스 찾기 메서드
             });
 
@@ -220,6 +227,13 @@ public class MainActivity extends AppCompatActivity {
                 @Override
                 public void onClick(View v){
                     onClickButtonEtc();
+                } // 연결가능한 디바이스 찾기 메서드
+            });
+
+            mResetBtn.setOnClickListener(new View.OnClickListener(){  // 블루투스 연결가능한 디바이스 찾기 버튼 이벤트 부여
+                @Override
+                public void onClick(View v){
+                    onClickButtonReset();
                 } // 연결가능한 디바이스 찾기 메서드
             });
 
@@ -405,7 +419,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public void onClickButtonForward(){
+    public void onClickButtonMoterForward(){
         if(mConnectedThread!=null){
 
             byte[] buff = new byte[1024];
@@ -417,7 +431,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public void onClickButtonReverse(){
+    public void onClickButtonMoterBackward(){
         if(mConnectedThread!=null){
 
             byte[] buff = new byte[1024];
@@ -429,7 +443,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public void onClickButtonSpeedUp(){
+    public void onClickButtonMoterOn(){
         if(mConnectedThread!=null){
 
             byte[] buff = new byte[1024];
@@ -441,9 +455,10 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public void onClickButtonSpeedDown(){
-        if(mConnectedThread!=null){
+    public void onClickButtonMoterOff(){
 
+        if(mConnectedThread!=null){
+            System.out.println("hi");
             byte[] buff = new byte[1024];
             int array[] = {0xFF,0xC2,0x3D,0xFF};
 
@@ -453,11 +468,22 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public void onClickButtonStop(){
+    public void onClickButtonMoterNormal(){
         if(mConnectedThread!=null){
 
             byte[] buff = new byte[1024];
             int array[] = {0xFF,0xE0,0x1F,0xFF};
+
+            for(int i=0; i< array.length; i++) {
+                mConnectedThread.write1(array[i]);
+            }
+        }
+    }
+    public void onClickButtonMoterTableMode(){
+        if(mConnectedThread!=null){
+
+            byte[] buff = new byte[1024];
+            int array[] = {0xFF,0xA8,0x57,0xFF};
 
             for(int i=0; i< array.length; i++) {
                 mConnectedThread.write1(array[i]);
@@ -471,6 +497,17 @@ public class MainActivity extends AppCompatActivity {
 
             byte[] buff = new byte[1024];
             int array[] = {0xFF,0x90,0x6F,0xFF};
+
+            for(int i=0; i< array.length; i++) {
+                mConnectedThread.write1(array[i]);
+            }
+        }
+    }
+    public void onClickButtonReset(){
+        if(mConnectedThread!=null){
+
+            byte[] buff = new byte[1024];
+            int array[] = {0xFF,0x68,0x97,0xFF};
 
             for(int i=0; i< array.length; i++) {
                 mConnectedThread.write1(array[i]);

@@ -10,37 +10,7 @@
     android:paddingBottom="@dimen/activity_vertical_margin"
     tools:context="com.mcuhq.simplebluetooth.MainActivity">
 
-    <TextView
-        android:id="@+id/textView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:text="BT Zeotrope Controller" />
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:orientation="horizontal">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="0.1"
-            android:ellipsize="end"
-            android:maxLines="1"
-            android:text="RX:"
-            android:textStyle="bold" />
-
-        <TextView
-            android:id="@+id/read_buffer"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="0.9"
-            android:ellipsize="end"
-            android:maxLines="1"
-            android:text="&lt;Read Buffer>" />
-    </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -54,7 +24,8 @@
             android:ellipsize="end"
             android:maxLines="1"
             android:text="Status:"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            android:textSize="8sp" />
 
         <TextView
             android:id="@+id/bluetooth_status"
@@ -63,115 +34,165 @@
             android:layout_weight="0.9"
             android:ellipsize="end"
             android:maxLines="1"
-            android:text="&lt;Bluetooth Status>" />
+            android:text="&lt;Bluetooth Status>"
+            android:textSize="8sp" />
     </LinearLayout>
 
-    <Button
-        android:id="@+id/scan"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="#e6aabb"
-        android:text="Bluetooth ON" />
-
-    <Button
-        android:id="@+id/off"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="#aabbcc"
-        android:text="Bluetooth OFF" />
 
     <Button
         android:id="@+id/paired_btn"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="#D2E5F4"
-        android:text="Show paired Devices" />
+        android:text="Show paired Devices"
+        android:textSize="8sp" />
 
     <Button
         android:id="@+id/discover"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="#E2ECD7"
-        android:text="Discover New Devices" />
+        android:text="Discover New Devices"
+        android:textSize="8sp" />
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
-
-        <Button
-            android:id="@+id/btn_ledOn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="0.25"
-            android:text="LED_ON"
-            android:textSize="7sp" />
-
-        <Button
-            android:id="@+id/btn_ledOff"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="0.25"
-            android:text="LED_OFF"
-            android:textSize="7sp" />
-
-        <Button
-            android:id="@+id/btn_forward"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="0.25"
-            android:text="정회전"
-            android:textSize="7sp" />
-
-        <Button
-            android:id="@+id/btn_reverse"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="역회전"
-            android:textSize="7sp" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="55dp"
-        android:orientation="horizontal">
-
-        <Button
-            android:id="@+id/btn_SpeedUp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="0.25"
-            android:text="속도_업"
-            android:textSize="7sp" />
-
-        <Button
-            android:id="@+id/btn_SpeedDown"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="0.25"
-            android:text="속도_다운"
-            android:textSize="7sp" />
-
-        <Button
-            android:id="@+id/btn_Stop"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="0.25"
-            android:text="STOP"
-            android:textSize="7sp" />
-
-        <Button
-            android:id="@+id/btn_Etc"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="ETC"
-            android:textSize="7sp" />
-    </LinearLayout>
 
     <ListView
         android:id="@+id/devices_list_view"
         android:layout_width="wrap_content"
-        android:layout_height="236dp"
-        android:choiceMode="singleChoice" />
+        android:layout_height="136dp"
+        android:choiceMode="none"
+        android:textSize="8sp"
+
+        />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:background="@android:color/black" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:orientation="horizontal">
+    </LinearLayout>
+
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:orientation="horizontal">
+
+
+
+        <Button
+            android:id="@+id/btn_moterOn"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="0.25"
+            android:text="MOTOR ON"
+            android:textSize="12sp" />
+
+        <Button
+            android:id="@+id/btn_moterOff"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="0.25"
+            android:text="MOTOR OFF"
+            android:textSize="12sp" />
+
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/btn_moter_forward"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="0.25"
+            android:text="MOTOR FORWARD"
+            android:textSize="6sp" />
+
+        <Button
+            android:id="@+id/btn_moter_backword"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="0.25"
+            android:text="MOTOR BACKWARD"
+            android:textSize="6sp" />
+
+        <Button
+            android:id="@+id/btn_moterNormal"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="0.25"
+            android:text="MT NORMAL"
+            android:textSize="6sp" />
+
+        <Button
+            android:id="@+id/btn_moterTableMode"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="0.25"
+            android:text="MT TABLE MODE"
+            android:textSize="6sp" />
+
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/btn_ledOn"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="0.25"
+            android:text="LED ON"
+            android:textSize="12sp" />
+
+        <Button
+            android:id="@+id/btn_ledOff"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="0.25"
+            android:text="LED OFF"
+            android:textSize="12sp" />
+
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:orientation="horizontal">
+
+
+        <Button
+            android:id="@+id/btn_etc"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="0.25"
+            android:text="ETC"
+            android:textSize="12sp" />
+
+        <Button
+            android:id="@+id/btn_reset"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="0.25"
+            android:text="RESET"
+            android:textSize="12sp" />
+
+
+    </LinearLayout>
+
+
 
 </LinearLayout>
