@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
@@ -28,7 +29,13 @@ import android.widget.Toast;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Set;
+import java.util.TimeZone;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.UUID;
 
 public class MainActivity extends AppCompatActivity {
@@ -51,17 +58,18 @@ public class MainActivity extends AppCompatActivity {
     private Button mDiscoverBtn; // 연결가능한 디바이스 목록찾기 버튼
     private ListView mDevicesListView; // 블투 연결 할 디바이스 목록 찾기 뷰리스트
 
-    //임시용
-    private Button mLedOnBtn;
-    private Button mLedOffBtn;
-    private Button mMoterForwardBtn;
-    private Button mMoterBackwardBtn;
+
+
+    private Button mAutoModeOnbtn;
     private Button mMoterOnBtn;
     private Button mMoterOffBtn;
-    private Button mMoterNormalBtn;
-    private Button mMoterTableModeBtn;
-    private Button mEtcBtn;
     private Button mResetBtn;
+    private Button mEtcBtn1;
+    private Button mEtcBtn2;
+    private Button mEtcBtn3;
+
+
+    private Button mTestBtn;
 
 
     private BluetoothAdapter mBTAdapter; // 블루투스 관련 설정 객체
@@ -72,6 +80,16 @@ public class MainActivity extends AppCompatActivity {
     private ConnectedThread mConnectedThread; // bluetooth background worker thread to send and receive data
     private BluetoothSocket mBTSocket = null; // bi-directional client-to-client data path
 
+    private Timer timerCall;
+    private Timer timerOffCall; // 2분뒤 끄는 용도용
+    private boolean menuMode;   //  메뉴얼모드 키 (true : 오토모드 / false : 메뉴얼모드)
+
+    private TextView timerTextView;
+
+    private CountDownTimer countDownTimer;
+    private boolean isTimerRunning = false;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -80,23 +98,21 @@ public class MainActivity extends AppCompatActivity {
 
         // View 단의 속성을 부여
         mBluetoothStatus = (TextView)findViewById(R.id.bluetooth_status);
-        //mReadBuffer = (TextView) findViewById(R.id.read_buffer);
-        //mScanBtn = (Button)findViewById(R.id.scan);
-        //mOffBtn = (Button)findViewById(R.id.off);
         mDiscoverBtn = (Button)findViewById(R.id.discover);
         mListPairedDevicesBtn = (Button)findViewById(R.id.paired_btn);
 
         // 임시버튼
-        mLedOnBtn = (Button)findViewById(R.id.btn_ledOn);
-        mLedOffBtn = (Button)findViewById(R.id.btn_ledOff);
-        mMoterForwardBtn = (Button)findViewById(R.id.btn_moter_forward);
-        mMoterBackwardBtn = (Button)findViewById(R.id.btn_moter_backword);
+
+        mAutoModeOnbtn = (Button)findViewById(R.id.btn_autoModeOn);
         mMoterOnBtn = (Button)findViewById(R.id.btn_moterOn);
         mMoterOffBtn = (Button)findViewById(R.id.btn_moterOff);
-        mMoterNormalBtn = (Button)findViewById(R.id.btn_moterNormal);
-        mMoterTableModeBtn = (Button)findViewById(R.id.btn_moterTableMode);
-        mEtcBtn = (Button)findViewById(R.id.btn_etc);
+
         mResetBtn = (Button)findViewById(R.id.btn_reset);
+        mEtcBtn1 = (Button)findViewById(R.id.btn_etc1);
+        mEtcBtn2 = (Button)findViewById(R.id.btn_etc2);
+        mEtcBtn3 = (Button)findViewById(R.id.btn_etc3);
+        mTestBtn = (Button)findViewById(R.id.btn_test);
+        timerTextView = (TextView) findViewById(R.id.timerTextView);
 
 
         mBTArrayAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1); // 리스트로 보여줄 어댑터 (텍스트뷰 하나로 구성된 레이아웃)
@@ -106,12 +122,13 @@ public class MainActivity extends AppCompatActivity {
         mDevicesListView.setAdapter(mBTArrayAdapter); // 어댑터를 이용해서 데이터를 View로 만들어서 뿌려줌
         mDevicesListView.setOnItemClickListener(mDeviceClickListener); // 각 View들은 누를시 이벤트를 가짐 (블투연결이벤트)
 
+
+
         // 위치 권한 요청
         // 권한 보유 유무 체크 ContextCompat.checkSelfPermission 메서드 반환타입은 PERMISSION_GRANTED or PERMISSION_DENIED
         if(ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED)
             // 권한 없을시 아래 메서드를 통해 권한을 다시 요청함
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, 1);
-
 
         mHandler = new Handler(Looper.getMainLooper()){
             @Override
@@ -119,7 +136,7 @@ public class MainActivity extends AppCompatActivity {
                 if(msg.what == MESSAGE_READ){
                     String readMessage = null;
                     readMessage = new String((byte[]) msg.obj, StandardCharsets.UTF_8);
-                    mReadBuffer.setText(readMessage);
+                   // mReadBuffer.setText(readMessage);
                 }
 
                 if(msg.what == CONNECTING_STATUS){
@@ -167,74 +184,59 @@ public class MainActivity extends AppCompatActivity {
                 } // 연결가능한 디바이스 찾기 메서드
             });
 
-            //임시
-            mLedOnBtn.setOnClickListener(new View.OnClickListener(){  // 블루투스 연결가능한 디바이스 찾기 버튼 이벤트 부여
+            mAutoModeOnbtn.setOnClickListener(new View.OnClickListener(){  // 오토모드 버튼 누를시 이벤트
                 @Override
                 public void onClick(View v){
-                    onClickButtonLedOn();
-                } // 연결가능한 디바이스 찾기 메서드
+                    onClickButtonAutoModeOn();
+                }
             });
 
-            mLedOffBtn.setOnClickListener(new View.OnClickListener(){  // 블루투스 연결가능한 디바이스 찾기 버튼 이벤트 부여
-                @Override
-                public void onClick(View v){
-                    onClickButtonLedOff();
-                } // 연결가능한 디바이스 찾기 메서드
-            });
-
-            mMoterForwardBtn.setOnClickListener(new View.OnClickListener(){  // 블루투스 연결가능한 디바이스 찾기 버튼 이벤트 부여
-                @Override
-                public void onClick(View v){
-                    onClickButtonMoterForward();
-                } // 연결가능한 디바이스 찾기 메서드
-            });
-
-            mMoterBackwardBtn.setOnClickListener(new View.OnClickListener(){  // 블루투스 연결가능한 디바이스 찾기 버튼 이벤트 부여
-                @Override
-                public void onClick(View v){
-                    onClickButtonMoterBackward();
-                } // 연결가능한 디바이스 찾기 메서드
-            });
-
-            mMoterOnBtn.setOnClickListener(new View.OnClickListener(){  // 블루투스 연결가능한 디바이스 찾기 버튼 이벤트 부여
+            mMoterOnBtn.setOnClickListener(new View.OnClickListener(){  // 모터On 버튼 이벤트
                 @Override
                 public void onClick(View v){
                     onClickButtonMoterOn();
-                } // 연결가능한 디바이스 찾기 메서드
+                }
             });
 
-            mMoterOffBtn.setOnClickListener(new View.OnClickListener(){  // 블루투스 연결가능한 디바이스 찾기 버튼 이벤트 부여
+            mMoterOffBtn.setOnClickListener(new View.OnClickListener(){  // 모터OFF 버튼 이벤트
                 @Override
                 public void onClick(View v){
                     onClickButtonMoterOff();
-                } // 연결가능한 디바이스 찾기 메서드
-            });
-            mMoterNormalBtn.setOnClickListener(new View.OnClickListener(){  // 블루투스 연결가능한 디바이스 찾기 버튼 이벤트 부여
-                @Override
-                public void onClick(View v){
-                    onClickButtonMoterNormal();
-                } // 연결가능한 디바이스 찾기 메서드
+                }
             });
 
-            mMoterTableModeBtn.setOnClickListener(new View.OnClickListener(){  // 블루투스 연결가능한 디바이스 찾기 버튼 이벤트 부여
-                @Override
-                public void onClick(View v){
-                    onClickButtonMoterTableMode();
-                } // 연결가능한 디바이스 찾기 메서드
-            });
-
-            mEtcBtn.setOnClickListener(new View.OnClickListener(){  // 블루투스 연결가능한 디바이스 찾기 버튼 이벤트 부여
-                @Override
-                public void onClick(View v){
-                    onClickButtonEtc();
-                } // 연결가능한 디바이스 찾기 메서드
-            });
-
-            mResetBtn.setOnClickListener(new View.OnClickListener(){  // 블루투스 연결가능한 디바이스 찾기 버튼 이벤트 부여
+            mResetBtn.setOnClickListener(new View.OnClickListener(){  // 리셋 버튼 이벤트
                 @Override
                 public void onClick(View v){
                     onClickButtonReset();
-                } // 연결가능한 디바이스 찾기 메서드
+                }
+            });
+
+            mEtcBtn1.setOnClickListener(new View.OnClickListener(){  // etc1 버튼 이벤트
+                @Override
+                public void onClick(View v){
+                    onClickButtonEtc1();
+                }
+            });
+
+            mEtcBtn2.setOnClickListener(new View.OnClickListener(){  // etc2 버튼 이벤트
+                @Override
+                public void onClick(View v){
+                    onClickButtonEtc2();
+                }
+            });
+
+            mEtcBtn3.setOnClickListener(new View.OnClickListener(){  // etc3 버튼 이벤트
+                @Override
+                public void onClick(View v){
+                    onClickButtonEtc3();
+                }
+            });
+
+            mTestBtn.setOnClickListener(new View.OnClickListener(){  // 테스트모드 버튼 누를시 이벤트
+                @Override
+                public void onClick(View v){
+                }
             });
 
         }
@@ -377,8 +379,6 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
-
-
     private BluetoothSocket createBluetoothSocket(BluetoothDevice device) throws IOException {
         try {
             final Method m = device.getClass().getMethod("createInsecureRfcommSocketToServiceRecord", UUID.class);
@@ -394,58 +394,138 @@ public class MainActivity extends AppCompatActivity {
         intent.putExtra("BtConnected", mConnectedThread);
         startActivity(intent);
     }
-    // 임시 버튼
-    public void onClickButtonLedOn(){
-        if(mConnectedThread!=null){
 
-            byte[] buff = new byte[1024];
-            int array[] = {0xFF,0xA2,0x5D,0xFF};
+    //타이머
+    private void startTimer() {
+        new Handler(Looper.getMainLooper()).post(new Runnable() {
+            @Override
+            public void run() {
+                countDownTimer = new CountDownTimer(2 * 60 * 1000, 1000) {
+                    @Override
+                    public void onTick(long millisUntilFinished) {
+                        long seconds = millisUntilFinished / 1000;
+                        long minutes = seconds / 60;
+                        seconds = seconds % 60;
 
-            for(int i=0; i< array.length; i++) {
-                mConnectedThread.write1(array[i]);
+                        String timeFormatted = String.format("%02d:%02d", minutes, seconds);
+                        timerTextView.setText(timeFormatted);
+                    }
+
+                    @Override
+                    public void onFinish() {
+                        timerTextView.setText("타이머 종료");
+                        isTimerRunning = false;
+                    }
+                }.start();
+
+                isTimerRunning = true;
+            }
+        });
+    }
+
+    private void stopTimer() {
+        new Handler(Looper.getMainLooper()).post(new Runnable() {
+            @Override
+            public void run() {
+                if (countDownTimer != null) {
+                    countDownTimer.cancel();
+                    timerTextView.setText("타이머 중지");
+                    isTimerRunning = false;
+                }
+            }
+        });
+    }
+
+    // 이전에 예약된 타이머 작업 취소
+    private void cancelTimers() {
+        if (timerCall != null) {
+            timerCall.cancel();
+            timerCall.purge();
+            timerCall = null;
+        }
+        if (timerOffCall != null) {
+            timerOffCall.cancel();
+            timerOffCall.purge();
+            timerOffCall = null;
+        }
+    }
+
+
+
+    // 오토모드 버튼 on
+
+    public void onClickButtonAutoModeOn() {
+        System.out.println("오토모드 버튼");
+
+        // 현재 시간을 기준으로 다음 0분, 20분, 40분의 시간을 계산하여 예약
+        Calendar currentTime = Calendar.getInstance(TimeZone.getTimeZone("Asia/Seoul"));
+        int currentMinute = currentTime.get(Calendar.MINUTE);
+        int currentSecond = currentTime.get(Calendar.SECOND);
+        System.out.println("현재 시간: " + currentMinute + "분 " + currentSecond + "초");
+
+        if (mConnectedThread != null) {
+            if (menuMode) {
+                System.out.println("menumode true");
+                mMoterOnBtn.setEnabled(true);
+                mMoterOffBtn.setEnabled(true);
+                cancelTimers(); // 이전에 예약된 작업 취소
+                menuMode = false;
+            } else {
+                System.out.println("menumode false");
+                mMoterOnBtn.setEnabled(false);
+                mMoterOffBtn.setEnabled(false);
+
+                TimerTask timerTask = new TimerTask() {
+
+                    @Override
+                    public void run() {
+                        Date date = new Date();
+                        SimpleDateFormat simpl = new SimpleDateFormat("yyyy년 MM월 dd일 aa hh시 mm분 ss초");
+                        String s = simpl.format(date);
+                        System.out.println("모터시작  " + s);
+                        onClickButtonMoterOn();
+
+                        TimerTask newTimerOffTask = new TimerTask() {
+                            @Override
+                            public void run() {
+                                Date date = new Date();
+                                SimpleDateFormat simpl = new SimpleDateFormat("yyyy년 MM월 dd일 aa hh시 mm분 ss초");
+                                String s = simpl.format(date);
+                                System.out.println("2분뒤 실행 " + s);
+                                onClickButtonMoterOff();
+                                cancel();
+                                System.out.println("타이머 종료");
+                            }
+
+                            @Override
+                            public boolean cancel() {
+                                return super.cancel();
+                            }
+                        };
+                        timerOffCall.schedule(newTimerOffTask, 2 * 60 * 1000);
+                    }
+                };
+
+                cancelTimers(); // 이전에 예약된 작업 취소
+
+                timerCall = new Timer();
+                timerOffCall = new Timer();
+                int delay = ((20 - (currentMinute % 20)) * 60 - currentSecond) * 1000;
+                System.out.println("delay = " + delay);
+                menuMode = true;
+                timerCall.schedule(timerTask, delay, 20 * 60 * 1000); // 20분마다 작업 반복
             }
         }
     }
 
-    public void onClickButtonLedOff(){
-        if(mConnectedThread!=null){
 
-            byte[] buff = new byte[1024];
-            int array[] = {0xFF,0x62,0x9D,0xFF};
-
-            for(int i=0; i< array.length; i++) {
-                mConnectedThread.write1(array[i]);
-            }
-        }
-    }
-
-    public void onClickButtonMoterForward(){
-        if(mConnectedThread!=null){
-
-            byte[] buff = new byte[1024];
-            int array[] = {0xFF,0xE2,0x1D,0xFF};
-
-            for(int i=0; i< array.length; i++) {
-                mConnectedThread.write1(array[i]);
-            }
-        }
-    }
-
-    public void onClickButtonMoterBackward(){
-        if(mConnectedThread!=null){
-
-            byte[] buff = new byte[1024];
-            int array[] = {0xFF,0x22,0xDD,0xFF};
-
-            for(int i=0; i< array.length; i++) {
-                mConnectedThread.write1(array[i]);
-            }
-        }
-    }
-
+    // 모터 on
     public void onClickButtonMoterOn(){
+        System.out.println("MainActivity.onClickButtonMoterOn");
         if(mConnectedThread!=null){
-
+            if(menuMode) {
+                startTimer();
+            }
             byte[] buff = new byte[1024];
             int array[] = {0xFF,0x02,0xFD,0xFF};
 
@@ -455,9 +535,13 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    // 모터 off
     public void onClickButtonMoterOff(){
-
+        System.out.println("MainActivity.onClickButtonMoterOff");
         if(mConnectedThread!=null){
+            if(menuMode) {
+                stopTimer();
+            }
             System.out.println("hi");
             byte[] buff = new byte[1024];
             int array[] = {0xFF,0xC2,0x3D,0xFF};
@@ -468,41 +552,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public void onClickButtonMoterNormal(){
-        if(mConnectedThread!=null){
-
-            byte[] buff = new byte[1024];
-            int array[] = {0xFF,0xE0,0x1F,0xFF};
-
-            for(int i=0; i< array.length; i++) {
-                mConnectedThread.write1(array[i]);
-            }
-        }
-    }
-    public void onClickButtonMoterTableMode(){
-        if(mConnectedThread!=null){
-
-            byte[] buff = new byte[1024];
-            int array[] = {0xFF,0xA8,0x57,0xFF};
-
-            for(int i=0; i< array.length; i++) {
-                mConnectedThread.write1(array[i]);
-            }
-        }
-    }
-
-
-    public void onClickButtonEtc(){
-        if(mConnectedThread!=null){
-
-            byte[] buff = new byte[1024];
-            int array[] = {0xFF,0x90,0x6F,0xFF};
-
-            for(int i=0; i< array.length; i++) {
-                mConnectedThread.write1(array[i]);
-            }
-        }
-    }
+    // 리셋
     public void onClickButtonReset(){
         if(mConnectedThread!=null){
 
@@ -514,5 +564,109 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     }
+
+    // ETC 1
+    public void onClickButtonEtc1(){
+        if(mConnectedThread!=null){
+
+            byte[] buff = new byte[1024];
+            int array[] = {0xFF,0x90,0x6F,0xFF};
+
+            for(int i=0; i< array.length; i++) {
+                mConnectedThread.write1(array[i]);
+            }
+        }
+    }
+
+    // ETC 2
+    public void onClickButtonEtc2(){
+        if(mConnectedThread!=null){
+
+            byte[] buff = new byte[1024];
+            int array[] = {0xFF,0xA2,0x5D,0xFF};
+
+            for(int i=0; i< array.length; i++) {
+                mConnectedThread.write1(array[i]);
+            }
+        }
+    }
+
+    // ETC 3
+    public void onClickButtonEtc3(){
+        if(mConnectedThread!=null){
+
+            byte[] buff = new byte[1024];
+            int array[] = {0xFF,0x62,0x9D,0xFF};
+
+            for(int i=0; i< array.length; i++) {
+                mConnectedThread.write1(array[i]);
+            }
+        }
+    }
+
+    public void onClickTest() {
+        System.out.println("오토모드 버튼");
+
+        // 현재 시간을 기준으로 다음 5분, 10분, 15분, ... 의 시간을 계산하여 예약
+        Calendar currentTime = Calendar.getInstance(TimeZone.getTimeZone("Asia/Seoul"));
+        int currentMinute = currentTime.get(Calendar.MINUTE);
+        int currentSecond = currentTime.get(Calendar.SECOND);
+        System.out.println("현재 시간: " + currentMinute + "분 " + currentSecond + "초");
+
+
+        if (menuMode) {
+            System.out.println("menumode true");
+            mMoterOnBtn.setEnabled(true);
+            mMoterOffBtn.setEnabled(true);
+            cancelTimers(); // 이전에 예약된 작업 취소
+            menuMode = false;
+        } else {
+            System.out.println("menumode false");
+            mMoterOnBtn.setEnabled(false);
+            mMoterOffBtn.setEnabled(false);
+
+            TimerTask timerTask = new TimerTask() {
+                //private boolean isCanceled = false;
+
+                @Override
+                public void run() {
+                    Date date = new Date();
+                    SimpleDateFormat simpl = new SimpleDateFormat("yyyy년 MM월 dd일 aa hh시 mm분 ss초");
+                    simpl.setTimeZone(TimeZone.getTimeZone("Asia/Seoul"));
+                    String s = simpl.format(date);
+                    System.out.println("모터시작  " + s);
+                    onClickButtonMoterOn();
+
+                    // 2분 후에 모터를 끄는 작업 예약
+                    TimerTask newTimerOffTask = new TimerTask() {
+                        @Override
+                        public void run() {
+                            System.out.println("2분뒤 실행 " + currentMinute);
+                            System.out.println("!isCanceled");
+                            onClickButtonMoterOff();
+                            cancel();
+                            System.out.println("타이머 종료");
+                        }
+
+                        @Override
+                        public boolean cancel() {
+                            return super.cancel();
+                        }
+                    };
+                    timerOffCall.schedule(newTimerOffTask, 2 * 60 * 1000);
+                }
+            };
+
+            cancelTimers(); // 이전에 예약된 작업 취소
+
+            timerCall = new Timer();
+            timerOffCall = new Timer();
+            int delay = ((3 - (currentMinute % 3)) * 60 - currentSecond) * 1000;
+            System.out.println("delay = " + delay);
+            timerCall.schedule(timerTask, delay, 3 * 60 * 1000); // 5분마다 작업 반복
+            menuMode = true;
+        }
+    }
+
 
 }
