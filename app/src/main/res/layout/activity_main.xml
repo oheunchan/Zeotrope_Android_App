@@ -11,7 +11,6 @@
     tools:context="com.mcuhq.simplebluetooth.MainActivity">
 
 
-
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -24,8 +23,8 @@
             android:ellipsize="end"
             android:maxLines="1"
             android:text="Status:"
-            android:textStyle="bold"
-            android:textSize="8sp" />
+            android:textSize="8sp"
+            android:textStyle="bold" />
 
         <TextView
             android:id="@+id/bluetooth_status"
@@ -73,9 +72,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="56dp"
-        android:orientation="horizontal">
-    </LinearLayout>
-
+        android:orientation="horizontal"></LinearLayout>
 
 
     <LinearLayout
@@ -88,8 +85,8 @@
             android:id="@+id/timerTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:gravity="center"
             android:layout_weight="0.20"
+            android:gravity="center"
             android:text="00:00"
             android:textSize="34sp" />
 
@@ -101,13 +98,56 @@
         android:layout_height="56dp"
         android:orientation="horizontal">
 
-        <Button
-            android:id="@+id/btn_test"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="0.20"
-            android:text="Test Mode"
-            android:textSize="12sp" />
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="56dp"
+            android:layout_weight="0.5"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/btn_autoModeOn"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="0.20"
+                android:text="Auto Mode"
+                android:textSize="12sp" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="56dp"
+            android:layout_weight="0.5"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/btn_1minute"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:backgroundTint="@color/colorButtonNormal"
+                android:layout_weight="0.33"
+                android:text="1 Min"
+                android:textSize="12sp" />
+
+            <Button
+                android:id="@+id/btn_2minute"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="0.33"
+                android:backgroundTint="@color/colorStrongGrey"
+                android:text="2 Min"
+                android:textSize="12sp" />
+
+            <Button
+                android:id="@+id/btn_3minute"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="0.33"
+                android:text="3 Min"
+                android:textSize="12sp" />
+
+        </LinearLayout>
+
 
     </LinearLayout>
 
@@ -115,15 +155,6 @@
         android:layout_width="match_parent"
         android:layout_height="56dp"
         android:orientation="horizontal">
-
-        <Button
-            android:id="@+id/btn_autoModeOn"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="0.20"
-            android:text="Auto Mode"
-            android:textSize="12sp"
-            />
 
         <Button
             android:id="@+id/btn_moterOn"
@@ -155,8 +186,8 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_weight="0.25"
-            android:text="RESET"
             android:backgroundTint="@color/colorAccent"
+            android:text="RESET"
             android:textSize="12sp" />
 
         <Button
@@ -186,6 +217,35 @@
 
     </LinearLayout>
 
+    <!--<LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/btn_test"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="0.20"
+            android:text="Test Mode"
+            android:textSize="12sp" />
+
+        <Button
+            android:id="@+id/btn_a_play"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="APLAY"
+
+           />
+        <Button
+            android:id="@+id/btn_c_play"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="CPLAY"
+
+            />
+
+    </LinearLayout>-->
 
 
 </LinearLayout>

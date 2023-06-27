@@ -9,6 +9,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
+import android.content.res.ColorStateList;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
@@ -68,8 +70,15 @@ public class MainActivity extends AppCompatActivity {
     private Button mEtcBtn2;
     private Button mEtcBtn3;
 
+    private Button m1Minute;
+    private Button m2Minute;
+    private Button m3Minute;
+
 
     private Button mTestBtn;
+    private Button mBtnPlay;
+    private Button mBtnAPlay;
+    private Button mBtnCPlay;
 
 
     private BluetoothAdapter mBTAdapter; // 블루투스 관련 설정 객체
@@ -89,6 +98,24 @@ public class MainActivity extends AppCompatActivity {
     private CountDownTimer countDownTimer;
     private boolean isTimerRunning = false;
 
+    private int cntOn;
+    private int cntOff;
+    private int timeSet = 2;
+
+    // 노래 재생 배열
+    private int currentSongIndex = 0;
+
+    private int playbackPositionA = 0; // A곡 재생 위치 저장 변수
+    private int playbackPositionC = 0; // C곡 재생 위치 저장 변수
+    // 음악 리스트
+    //private int[] songResources = {R.raw.test1, R.raw.test2};
+    //private MediaPlayer mMediaPlayer;
+    // 평상시 리스트
+    private MediaPlayer mMediaPlayerA;
+    private int[] songResourcesA = {R.raw.test1, R.raw.test2};
+    // 타이머 동작시 바뀔 음악 리스트
+    private MediaPlayer mMediaPlayerC;
+    private int[] songResourcesC = {R.raw.change};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -111,9 +138,14 @@ public class MainActivity extends AppCompatActivity {
         mEtcBtn1 = (Button)findViewById(R.id.btn_etc1);
         mEtcBtn2 = (Button)findViewById(R.id.btn_etc2);
         mEtcBtn3 = (Button)findViewById(R.id.btn_etc3);
-        mTestBtn = (Button)findViewById(R.id.btn_test);
+        //mTestBtn = (Button)findViewById(R.id.btn_test);
+        //mBtnPlay = (Button)findViewById(R.id.btn_play);
+        //mBtnAPlay = (Button)findViewById(R.id.btn_a_play);
+        //mBtnCPlay = (Button)findViewById(R.id.btn_c_play);
         timerTextView = (TextView) findViewById(R.id.timerTextView);
-
+        m1Minute = (Button)findViewById(R.id.btn_1minute);
+        m2Minute = (Button)findViewById(R.id.btn_2minute);
+        m3Minute = (Button)findViewById(R.id.btn_3minute);
 
         mBTArrayAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1); // 리스트로 보여줄 어댑터 (텍스트뷰 하나로 구성된 레이아웃)
         mBTAdapter = BluetoothAdapter.getDefaultAdapter(); // 블루투스 연결이 가능한지 여부 파악 (연결이 안 됐으면 null 값 반환)
@@ -191,6 +223,27 @@ public class MainActivity extends AppCompatActivity {
                 }
             });
 
+            m1Minute.setOnClickListener(new View.OnClickListener(){  // 1분 버튼 누를시 이벤트
+                @Override
+                public void onClick(View v){
+                    onClickButton1minute();
+                }
+            });
+
+            m2Minute.setOnClickListener(new View.OnClickListener(){  // 2분 버튼 누를시 이벤트
+                @Override
+                public void onClick(View v){
+                    onClickButton2minute();
+                }
+            });
+
+            m3Minute.setOnClickListener(new View.OnClickListener(){  // 3분 버튼 누를시 이벤트
+                @Override
+                public void onClick(View v){
+                    onClickButton3minute();
+                }
+            });
+
             mMoterOnBtn.setOnClickListener(new View.OnClickListener(){  // 모터On 버튼 이벤트
                 @Override
                 public void onClick(View v){
@@ -233,11 +286,25 @@ public class MainActivity extends AppCompatActivity {
                 }
             });
 
-            mTestBtn.setOnClickListener(new View.OnClickListener(){  // 테스트모드 버튼 누를시 이벤트
+            /*mTestBtn.setOnClickListener(new View.OnClickListener(){  // 테스트모드 버튼 누를시 이벤트
                 @Override
                 public void onClick(View v){
+                    onClickTest();
                 }
             });
+
+            mBtnAPlay.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    onClickA(view);
+                }
+            });
+            mBtnCPlay.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    onClickC(view);
+                }
+            });*/
 
         }
     }
@@ -400,7 +467,7 @@ public class MainActivity extends AppCompatActivity {
         new Handler(Looper.getMainLooper()).post(new Runnable() {
             @Override
             public void run() {
-                countDownTimer = new CountDownTimer(2 * 60 * 1000, 1000) {
+                countDownTimer = new CountDownTimer(timeSet * 60 * 1000, 1000) {
                     @Override
                     public void onTick(long millisUntilFinished) {
                         long seconds = millisUntilFinished / 1000;
@@ -413,7 +480,7 @@ public class MainActivity extends AppCompatActivity {
 
                     @Override
                     public void onFinish() {
-                        timerTextView.setText("타이머 종료");
+                        timerTextView.setText("Motor Off");
                         isTimerRunning = false;
                     }
                 }.start();
@@ -429,7 +496,7 @@ public class MainActivity extends AppCompatActivity {
             public void run() {
                 if (countDownTimer != null) {
                     countDownTimer.cancel();
-                    timerTextView.setText("타이머 중지");
+                    timerTextView.setText("Motor OfftimeSet");
                     isTimerRunning = false;
                 }
             }
@@ -502,7 +569,7 @@ public class MainActivity extends AppCompatActivity {
                                 return super.cancel();
                             }
                         };
-                        timerOffCall.schedule(newTimerOffTask, 2 * 60 * 1000);
+                        timerOffCall.schedule(newTimerOffTask, timeSet * 60 * 1000);
                     }
                 };
 
@@ -518,30 +585,64 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    // 1 분
+    public void onClickButton1minute(){
+        timeSet = 1;
+        colorSet();
+        // 진한 회색 색상 부여
+        int colorStrongGrey = ContextCompat.getColor(this, R.color.colorStrongGrey);
+        m1Minute.setBackgroundTintList(ColorStateList.valueOf(colorStrongGrey));
+    }
 
+    // 2 분
+    public void onClickButton2minute(){
+        colorSet();
+        timeSet = 2;
+        int colorStrongGrey = ContextCompat.getColor(this, R.color.colorStrongGrey);
+        m2Minute.setBackgroundTintList(ColorStateList.valueOf(colorStrongGrey));
+    }
+
+    // 3 분
+    public void onClickButton3minute(){
+        colorSet();
+        timeSet = 3;
+        int colorStrongGrey = ContextCompat.getColor(this, R.color.colorStrongGrey);
+        m3Minute.setBackgroundTintList(ColorStateList.valueOf(colorStrongGrey));
+    }
+    // 색상 초기화
+    public void colorSet(){
+        int colorGrey = ContextCompat.getColor(this, R.color.colorButtonNormal);
+        m1Minute.setBackgroundTintList(ColorStateList.valueOf(colorGrey));
+        m2Minute.setBackgroundTintList(ColorStateList.valueOf(colorGrey));
+        m3Minute.setBackgroundTintList(ColorStateList.valueOf(colorGrey));
+    }
     // 모터 on
     public void onClickButtonMoterOn(){
         System.out.println("MainActivity.onClickButtonMoterOn");
+        cntOn++;
         if(mConnectedThread!=null){
             if(menuMode) {
                 startTimer();
             }
+
             byte[] buff = new byte[1024];
             int array[] = {0xFF,0x02,0xFD,0xFF};
 
             for(int i=0; i< array.length; i++) {
                 mConnectedThread.write1(array[i]);
             }
+            System.out.println("카운트 on 갯수 " + cntOn);
         }
     }
 
     // 모터 off
     public void onClickButtonMoterOff(){
+        cntOff++;
         System.out.println("MainActivity.onClickButtonMoterOff");
         if(mConnectedThread!=null){
-            if(menuMode) {
+            //if(menuMode) {
                 stopTimer();
-            }
+            //}
             System.out.println("hi");
             byte[] buff = new byte[1024];
             int array[] = {0xFF,0xC2,0x3D,0xFF};
@@ -549,6 +650,7 @@ public class MainActivity extends AppCompatActivity {
             for(int i=0; i< array.length; i++) {
                 mConnectedThread.write1(array[i]);
             }
+            System.out.println("카운트 off 갯수 " + cntOff);
         }
     }
 
@@ -653,7 +755,7 @@ public class MainActivity extends AppCompatActivity {
                             return super.cancel();
                         }
                     };
-                    timerOffCall.schedule(newTimerOffTask, 2 * 60 * 1000);
+                    timerOffCall.schedule(newTimerOffTask, timeSet * 60 * 1000);
                 }
             };
 
@@ -663,10 +765,121 @@ public class MainActivity extends AppCompatActivity {
             timerOffCall = new Timer();
             int delay = ((3 - (currentMinute % 3)) * 60 - currentSecond) * 1000;
             System.out.println("delay = " + delay);
-            timerCall.schedule(timerTask, delay, 3 * 60 * 1000); // 5분마다 작업 반복
+            timerCall.schedule(timerTask, delay, 3 * 60 * 1000); // 3분마다 작업 반복
             menuMode = true;
         }
     }
+
+    /*
+    // PLAY 버튼 이벤트
+    public void onClick(View view) {
+        // MediaPlayer 없으면 초기화 진행
+        if (mMediaPlayer == null) {
+            int songResource = songResources[currentSongIndex];
+            mMediaPlayer = MediaPlayer.create(MainActivity.this, songResource);	// 출력할 음악 파일 세팅
+            // 음악 파일 재생이 완료됐을 때 호출될 콜백 세팅
+            mMediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                @Override
+                public void onCompletion(MediaPlayer mediaPlayer) {
+                    // null 처리 및 버튼 텍스트 PLAY로 변경
+                    mMediaPlayer = null;
+                    mBtnPlay.setText("PLAY");
+                    playNextSong(view); // 재생이 완료되면 다음 노래를 재생
+                }
+            });
+        }
+
+        isPlaying();
+    }
+
+    // 다음노래재생
+    private void playNextSong(View view) {
+        currentSongIndex++;
+        if (currentSongIndex >= songResources.length) {
+            currentSongIndex = 0; // 모든 노래를 재생한 경우, 처음 노래부터 다시 재생
+        }
+        onClick(view); // 다음 노래를 재생하기 위해 onClickPlay() 호출
+    }
+
+    // 플레이 체크
+    private void isPlaying() {
+        if (mMediaPlayer.isPlaying()) {    // 음악 파일 플레이중인 상태
+            // 음악 파일 멈추고 버튼 텍스트 PLAY로 변경
+            mMediaPlayer.pause();
+            mBtnPlay.setText("PLAY");
+        } else {    // 음악 파일 재생중이 아닌 상태
+            // 음악 파일 재생하고 버튼 텍스트 STOP으로 변경
+            mMediaPlayer.start();
+            mBtnPlay.setText("STOP");
+        }
+    }*/
+
+
+
+    public void onClickA(View view) {
+        isPlaying();
+        if (mMediaPlayerA == null) {
+            int songResource = songResourcesA[currentSongIndex];
+            mMediaPlayerA = MediaPlayer.create(MainActivity.this, songResource);
+            mMediaPlayerA.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                @Override
+                public void onCompletion(MediaPlayer mediaPlayer) {
+                    mMediaPlayerA.release();
+                    mMediaPlayerA = null;
+                    // Handle completion of A song here if needed
+                }
+            });
+            mMediaPlayerA.seekTo(playbackPositionA); // Seek to the saved playback position
+            mMediaPlayerA.start();
+            mBtnAPlay.setText("STOP A");
+        } else {
+            mMediaPlayerA.pause();
+            playbackPositionA = mMediaPlayerA.getCurrentPosition(); // Save the current playback position
+            mMediaPlayerA.release();
+            mMediaPlayerA = null;
+            mBtnAPlay.setText("PLAY A");
+        }
+    }
+
+    public void onClickC(View view) {
+        isPlaying();
+        if (mMediaPlayerC == null) {
+            int songResource = songResourcesC[currentSongIndex];
+            mMediaPlayerC = MediaPlayer.create(MainActivity.this, songResource);
+            mMediaPlayerC.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                @Override
+                public void onCompletion(MediaPlayer mediaPlayer) {
+                    mMediaPlayerC.release();
+                    mMediaPlayerC = null;
+                    // Handle completion of C song here if needed
+                }
+            });
+            mMediaPlayerC.seekTo(playbackPositionC); // Seek to the saved playback position
+            mMediaPlayerC.start();
+            mBtnCPlay.setText("STOP C");
+        } else {
+            mMediaPlayerC.pause();
+            playbackPositionC = mMediaPlayerC.getCurrentPosition(); // Save the current playback position
+            mMediaPlayerC.release();
+            mMediaPlayerC = null;
+            mBtnCPlay.setText("PLAY C");
+        }
+    }
+
+    private void isPlaying() {
+        if (mMediaPlayerA != null && mMediaPlayerA.isPlaying()) {
+            mMediaPlayerA.pause();
+            playbackPositionA = mMediaPlayerA.getCurrentPosition(); // Save the current playback position
+            mBtnAPlay.setText("PLAY A");
+        }
+        if (mMediaPlayerC != null && mMediaPlayerC.isPlaying()) {
+            mMediaPlayerC.pause();
+            playbackPositionC = mMediaPlayerC.getCurrentPosition(); // Save the current playback position
+            mBtnCPlay.setText("PLAY C");
+        }
+    }
+
+
 
 
 }
